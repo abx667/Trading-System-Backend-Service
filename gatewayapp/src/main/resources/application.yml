@@ -1,0 +1,99 @@
+server:
+  port: 7060
+ 
+spring:
+  application:
+    name: gateway
+ 
+  main:
+    web-application-type: reactive
+ 
+  cloud:
+    gateway:
+      server:
+        webflux:
+          # OPTIONAL but useful:
+          # enables automatic routing like /TRADINGCOMPANYSERVICE/** -> lb://TRADINGCOMPANYSERVICE
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+ 
+          routes:
+            - id: trading-company-service
+              uri: lb://TRADINGCOMPANYSERVICE
+              predicates:
+                - Path=/trading-companies/**
+            - id: trader-service
+              uri: lb://TRADERSERVICE
+              predicates:
+                - Path=/traders/**
+            - id: asset-service
+              uri: lb://ASSETSERVICE
+              predicates:
+                - Path=/assets/**
+            - id: trade-order-service
+              uri: lb://TRADEORDERSERVICE
+              predicates:
+                - Path=/orders/**
+            - id: settlement-service
+              uri: lb://SETTLEMENTSERVICE
+              predicates:
+                - Path=/settlements/**
+
+             
+
+
+ 
+  security:
+    oauth2:
+      # ✅ Gateway validates tokens coming from client (Bearer token)
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/master
+          # If issuer discovery fails, use jwk-set-uri instead:
+          # jwk-set-uri: http://localhost:8080/realms/master/protocol/openid-connect/certs
+ 
+      # ✅ Gateway can also request tokens from Keycloak (client_credentials) using your TokenService
+      client:
+        provider:
+          keycloak:
+            token-uri: http://localhost:8080/realms/master/protocol/openid-connect/token
+            user-name-attribute: preferred_username
+ 
+        registration:
+          keycloak-with-admin-scope:
+            provider: keycloak
+            client-id: user1
+            client-secret: 78r2wUs2m5h4kXtpMlAUMOuT2wTy8Riz
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: client_credentials
+            scope:
+              - admin
+ 
+          keycloak-with-trader-scope:
+            provider: keycloak
+            client-id: user2
+            client-secret: tz2OYXyArywnFoXgCz9mi4YzIWpH3N66
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: client_credentials
+            scope:
+              - trader
+ 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+    # ✅ Recommended: shows gateway as a service in Eureka
+    register-with-eureka: true
+    # ✅ Required: gateway must discover other services
+    fetch-registry: true
+ 
+  instance:
+    prefer-ip-address: true
+ 
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web.reactive.function.client: TRACE

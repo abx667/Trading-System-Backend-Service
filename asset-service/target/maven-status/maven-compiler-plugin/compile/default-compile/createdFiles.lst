@@ -1,0 +1,8 @@
+com\cognizant\assetservice\service\AssetServiceImpl.class
+com\cognizant\assetservice\repositories\AssetServiceRepository.class
+com\cognizant\assetservice\controller\AssetServiceController.class
+com\cognizant\assetservice\entity\Asset.class
+com\cognizant\assetservice\dto\AssetServiceDTO.class
+com\cognizant\assetservice\AssetServiceApplication.class
+com\cognizant\assetservice\mapper\AssetServiceMapper.class
+com\cognizant\assetservice\service\AssetService.class

@@ -22,16 +22,19 @@ public class SettlementController {
  
     @PostMapping
     public SettlementDTO create(@RequestBody SettlementDTO dto) {
+
         return service.createSettlement(dto);
     }
  
     @GetMapping
     public List<SettlementDTO> getAll() {
+
         return service.getAllSettlements();
     }
  
     @GetMapping("/{id}")
     public SettlementDTO getById(@PathVariable Long id) {
+
         return service.getSettlementById(id);
     }
     

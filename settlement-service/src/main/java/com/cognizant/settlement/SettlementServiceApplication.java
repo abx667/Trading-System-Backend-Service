@@ -8,6 +8,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class SettlementServiceApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(SettlementServiceApplication.class, args);
 	}
 

@@ -11,6 +11,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import io.swagger.v3.oas.models.servers.Server;
  
 @Configuration
 public class OpenApiConfig {
@@ -28,7 +29,12 @@ public class OpenApiConfig {
             // Don't force both scopes; Swagger will let you choose which scheme to authorize
             .addSecurityItem(new SecurityRequirement().addList("keycloakAdmin"))
             .addSecurityItem(new SecurityRequirement().addList("keycloakTrader"))
-            .info(new Info()
+                .addServersItem(
+                        new Server()
+                                .url(System.getenv().getOrDefault("GATEWAY_URL", "http://localhost:7060"))
+                                .description("Gateway")
+                )
+                .info(new Info()
                 .title("Trader Service")
                 .description("Customer API with OAuth2 Security")
                 .version("1.0"));

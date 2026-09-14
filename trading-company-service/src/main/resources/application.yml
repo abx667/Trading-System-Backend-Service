@@ -4,23 +4,17 @@ server:
 spring:
   application:
     name: trading-company-service
+
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8080/realms/master
+          issuer-uri: ${KEYCLOAK_ISSUER:http://localhost:8080/realms/trading-system}
+
   datasource:
-    url: jdbc:mysql://localhost:3306/trading_companies
-    username: root
-    password: Abir@4545
-
-springdoc:
- api-docs:
-  path: /v3/api-docs
- swagger-ui:
-  path: /swagger-ui.html
-
-  
+    url: ${DB_URL:jdbc:mysql://localhost:3306/trading_companies}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD}
 
   jpa:
     hibernate:
@@ -30,15 +24,22 @@ springdoc:
       hibernate:
         format_sql: true
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
     fetch-registry: true
+
   instance:
     prefer-ip-address: true
     instance-id: "${spring.application.name}:${spring.application.instance_id:${random.value}}"
 
 keycloak:
-  issuer: http://localhost:8080/realms/master
-  realm: master
+  issuer: ${KEYCLOAK_ISSUER:http://localhost:8080/realms/trading-system}
+  realm: trading-system

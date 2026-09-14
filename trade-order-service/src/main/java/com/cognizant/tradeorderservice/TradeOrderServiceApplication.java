@@ -10,6 +10,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 public class TradeOrderServiceApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(TradeOrderServiceApplication.class, args);
 	}
 

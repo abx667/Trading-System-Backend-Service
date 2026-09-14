@@ -6,23 +6,35 @@ import org.springframework.security.config.annotation.web.reactive.EnableWebFlux
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
-import static org.springframework.security.config.Customizer.withDefaults;
+
 
 @Configuration
 @EnableWebFluxSecurity
 public class SecurityConfig {
 
-	
-	
-	@Bean
+    @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
 
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
-                .authorizeExchange(ex -> ex.anyExchange().permitAll())
+                .authorizeExchange(ex -> ex
+                        .pathMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/trading-companies/v3/api-docs",
+                                "/traders/v3/api-docs",
+                                "/assets/v3/api-docs",
+                                "/orders/v3/api-docs",
+                                "/settlements/v3/api-docs"
+                        ).permitAll()
+                        .anyExchange().authenticated()
+                )
+                .oauth2ResourceServer(oauth2 ->
+                        oauth2.jwt(jwt -> {})
+                )
                 .formLogin(ServerHttpSecurity.FormLoginSpec::disable)
                 .httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
                 .build();
     }
-
 }

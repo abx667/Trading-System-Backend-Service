@@ -4,6 +4,7 @@ import com.cognizant.traderservice.dto.*;
 import com.cognizant.traderservice.service.TraderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
  

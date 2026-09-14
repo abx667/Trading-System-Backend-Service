@@ -36,6 +36,14 @@ public class TradeOrderServiceController {
     public ResponseEntity<List<TradeOrderResponseDTO>> getAllOrders() {
         return ResponseEntity.ok(traderService.getAllOrders());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TradeOrderResponseDTO> updateCompany(
+            @PathVariable Long id,
+            @RequestBody TradeOrderRequestDTO dto) {
+        return ResponseEntity.ok(traderService.updateOrder(id, dto));
+    }
+
  
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {

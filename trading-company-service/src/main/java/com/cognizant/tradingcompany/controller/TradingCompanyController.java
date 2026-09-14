@@ -1,6 +1,7 @@
 package com.cognizant.tradingcompany.controller;
  
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -20,16 +21,16 @@ public class TradingCompanyController {
  
     // CREATE
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('SCOPE_admin')")
+//    @PreAuthorize("hasAnyAuthority('SCOPE_admin')")
     
     public ResponseEntity<TradingCompanyDTO> createCompany(@RequestBody TradingCompanyDTO dto) {
         TradingCompanyDTO savedCompany = service.saveCompany(dto);
-        return ResponseEntity.ok(savedCompany);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedCompany);
     }
  
     // GET ALL
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('SCOPE_admin','SCOPE_trader')")
+//    @PreAuthorize("hasAnyAuthority('SCOPE_admin','SCOPE_trader')")
     
     public ResponseEntity<List<TradingCompanyDTO>> getAllCompanies() {
         return ResponseEntity.ok(service.getAllCompanies());
@@ -37,14 +38,13 @@ public class TradingCompanyController {
  
     // GET BY ID
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_admin','SCOPE_trader')")
+//    @PreAuthorize("hasAnyAuthority('SCOPE_admin','SCOPE_trader')")
     public ResponseEntity<TradingCompanyDTO> getCompanyById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getCompanyById(id));
     }
  
-    // UPDATE
+
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_admin')")
     public ResponseEntity<TradingCompanyDTO> updateCompany(
             @PathVariable Long id,
             @RequestBody TradingCompanyDTO dto) {
@@ -53,7 +53,7 @@ public class TradingCompanyController {
  
     // DELETE
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('SCOPE_admin')")
+//    @PreAuthorize("hasAnyAuthority('SCOPE_admin')")
     public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
         service.deleteCompanyDTO(id);
         return ResponseEntity.noContent().build();   // HTTP 204

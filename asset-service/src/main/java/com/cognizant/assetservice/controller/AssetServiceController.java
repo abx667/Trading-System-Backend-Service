@@ -1,6 +1,7 @@
 package com.cognizant.assetservice.controller;
  
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
  
@@ -23,12 +24,13 @@ public class AssetServiceController {
     @PostMapping
     public ResponseEntity<AssetServiceDTO> createAsset(@Valid @RequestBody AssetServiceDTO dto) {
         AssetServiceDTO savedAsset = service.saveAsset(dto);
-        return ResponseEntity.ok(savedAsset);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedAsset);
     }
  
     // GET ALL
     @GetMapping
     public ResponseEntity<List<AssetServiceDTO>> getAllAssets() {
+
         return ResponseEntity.ok(service.getAllAssets());
     }
  

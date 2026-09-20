@@ -1,0 +1,138 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: trading-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  eureka-server:
+    image: eureka-server:1.0
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    restart: unless-stopped
+
+  trading-company-service:
+    image: trading-company-service:1.0
+    container_name: trading-company-service
+    ports:
+      - "8081:8081"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka
+      KEYCLOAK_ISSUER: http://keycloak:8080/realms/trading-system
+      DB_URL: jdbc:mysql://mysql:3306/trading_companies
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - mysql
+      - eureka-server
+    restart: unless-stopped
+
+  asset-service:
+    image: asset-service:1.0
+    container_name: asset-service
+    ports:
+      - "8082:8082"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka
+      KEYCLOAK_ISSUER: http://keycloak:8080/realms/trading-system
+      DB_URL: jdbc:mysql://mysql:3306/assets
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - mysql
+      - eureka-server
+    restart: unless-stopped
+
+
+  trader-service:
+    image: trader-service:1.0
+    container_name: trader-service
+    ports:
+      - "8083:8083"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka
+      KEYCLOAK_ISSUER: http://keycloak:8080/realms/trading-system
+      DB_URL: jdbc:mysql://mysql:3306/traders
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - mysql
+      - eureka-server
+    restart: unless-stopped
+
+  trade-order-service:
+    image: trade-order-service:1.0
+    container_name: trade-order-service
+    ports:
+      - "8084:8084"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka
+      KEYCLOAK_ISSUER: http://keycloak:8080/realms/trading-system
+      DB_URL: jdbc:mysql://mysql:3306/trade_orders
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - mysql
+      - eureka-server
+      - trader-service
+      - asset-service
+    restart: unless-stopped
+
+  settlement-service:
+    image: settlement-service:1.0
+    container_name: settlement-service
+    ports:
+      - "8085:8085"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka
+      KEYCLOAK_ISSUER: http://keycloak:8080/realms/trading-system
+      DB_URL: jdbc:mysql://mysql:3306/settlements
+      DB_USERNAME: root
+      DB_PASSWORD: ${DB_PASSWORD}
+    depends_on:
+      - mysql
+      - eureka-server
+      - trade-order-service
+    restart: unless-stopped
+
+  gateway:
+    image: gatewayapp:1.0
+    container_name: gateway
+    ports:
+      - "7060:7060"
+    environment:
+      EUREKA_URL: http://eureka-server:8761/eureka
+      KEYCLOAK_ISSUER: http://keycloak:8080/realms/trading-system
+    depends_on:
+      - eureka-server
+      - trading-company-service
+      - trader-service
+      - asset-service
+      - trade-order-service
+      - settlement-service
+    restart: unless-stopped
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3
+    container_name: keycloak
+    command: start-dev
+    ports:
+      - "8080:8080"
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+  keycloak-data:
